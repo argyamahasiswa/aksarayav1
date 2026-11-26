@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AksaRaya - Papan Peringkat</title>
     <link rel="stylesheet" href="petualangan.css" />
-    <!-- Menggunakan CSS yang sudah ada -->
     <style>
       /* Tambahan CSS Khusus Tabel Peringkat */
       .leaderboard-card {
@@ -78,12 +77,26 @@
       <nav class="hud-navbar">
         <button
           class="btn-hud-back"
+          type="button"
           onclick="window.location.href = 'dashboard.html'"
         >
           <span class="icon">🏠</span><span>Dashboard</span>
         </button>
-        <div class="brand-box">
-          <span class="brand-title">AksaRaya Ranking</span>
+
+        <div class="hud-right">
+          <div class="brand-box">
+            <span class="brand-title">AksaRaya Ranking</span>
+          </div>
+
+          <button
+            class="btn-hud-back"
+            id="soundButton"
+            type="button"
+            aria-label="Aktifkan atau matikan suara"
+            title="Suara"
+          >
+            <span id="soundIcon">🔊</span>
+          </button>
         </div>
       </nav>
 
@@ -120,6 +133,8 @@
         </div>
       </section>
     </main>
+
+    <script src="aksaraya-sound.js"></script>
     <script src="click-sound.js"></script>
     <script src="leaderboard.js"></script>
   </body>

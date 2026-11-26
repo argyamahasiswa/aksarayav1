@@ -1,5 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // GANTI DENGAN URL WEB APP APPS SCRIPT YANG SAMA SEPERTI DI PETUALANGAN.JS
+  // Sinkronkan & nyalakan backsound utama di halaman papan peringkat
+  const soundButton = document.getElementById("soundButton");
+  const soundIcon = document.getElementById("soundIcon");
+  const soundManager = window.AksaRayaSound || null;
+
+  function syncSoundButton(isEnabled) {
+    if (soundIcon) {
+      soundIcon.textContent = isEnabled ? "🔊" : "🔇";
+    }
+    if (soundButton) {
+      soundButton.setAttribute(
+        "aria-label",
+        isEnabled ? "Matikan backsound" : "Nyalakan backsound",
+      );
+      soundButton.setAttribute("aria-pressed", String(isEnabled));
+    }
+  }
+
+  if (soundManager) {
+    syncSoundButton(soundManager.isEnabled());
+    soundManager.playIfEnabled();
+    soundManager.onChange(syncSoundButton);
+
+    soundButton?.addEventListener("click", () => {
+      soundManager.setEnabled(!soundManager.isEnabled());
+    });
+  } else {
+    const saved = sessionStorage.getItem("aksarayaSoundEnabled");
+    syncSoundButton(saved !== "false");
+  }
+
+  // URL WEB APP APPS SCRIPT
   const GAS_URL =
     "https://script.google.com/macros/s/AKfycbwhptKhl-7U2SeCwvJDjSUVFAK2McFxBvL5gTVgrezU9uWOONTWpwGX6CLAQvTkxDH1/exec";
 
