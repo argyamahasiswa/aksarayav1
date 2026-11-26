@@ -1,4 +1,6 @@
 (function () {
+  const VIDEO_BOOST_LEVEL = 7.0; // Ubah angka ini (misal 6.0 - 9.0) jika ingin lebih keras lagi
+
   const currentScript = document.currentScript;
   const scriptBase =
     currentScript && currentScript.src
@@ -16,6 +18,65 @@
       ? new URL(customSrc, scriptBase).href
       : new URL("assets/backsound-kuis.mp3", scriptBase).href;
   const isQuizPage = Boolean(customSrc && customSrc !== "assets/backsound.mp3");
+
+  // ==========================================
+  // PENGUAT SUARA OTOMATIS UNTUK VIDEO POS 1-3
+  // ==========================================
+  const boostedVideos = new WeakMap();
+
+  function boostVideoVolume(videoEl, gainLevel = VIDEO_BOOST_LEVEL) {
+    if (!videoEl || videoEl.tagName !== "VIDEO") return;
+    videoEl.muted = false;
+    videoEl.volume = 1.0;
+
+    if (boostedVideos.has(videoEl)) {
+      const existing = boostedVideos.get(videoEl);
+      if (existing.ctx && existing.ctx.state === "suspended") {
+        existing.ctx.resume().catch(() => {});
+      }
+      return;
+    }
+
+    if (window.location.protocol === "file:") return;
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+
+      const ctx = new AudioCtx();
+      const source = ctx.createMediaElementSource(videoEl);
+
+      // Pangkas dengung frekuensi rendah agar suara penjelasan tetap jernih
+      const highpass = ctx.createBiquadFilter();
+      highpass.type = "highpass";
+      highpass.frequency.value = 85;
+
+      // Penguat volume utama (7.0 = 700% dari volume maksimal browser)
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = gainLevel;
+
+      // Limiter pengaman agar suara keras tidak pecah/sember
+      const limiter = ctx.createDynamicsCompressor();
+      limiter.threshold.value = -1.0;
+      limiter.knee.value = 3.0;
+      limiter.ratio.value = 12.0;
+      limiter.attack.value = 0.002;
+      limiter.release.value = 0.15;
+
+      source.connect(highpass);
+      highpass.connect(gainNode);
+      gainNode.connect(limiter);
+      limiter.connect(ctx.destination);
+
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+
+      boostedVideos.set(videoEl, { ctx, gainNode });
+    } catch (e) {
+      console.warn("Penguat suara video tidak dapat aktif:", e);
+    }
+  }
 
   function areAllVideosHidden() {
     const videos = Array.from(document.querySelectorAll("video"));
@@ -53,6 +114,7 @@
       (event) => {
         if (event.target && event.target.tagName === "VIDEO") {
           parentSound.pauseTemp?.();
+          boostVideoVolume(event.target);
         }
       },
       true,
@@ -247,6 +309,7 @@
         pausedByVideo = true;
         mainAudio.pause();
         quizAudio.pause();
+        boostVideoVolume(event.target);
       }
     },
     true,
@@ -382,6 +445,9 @@
       isQuizMode = false;
       quizAudio.pause();
       quizAudio.currentTime = 0;
+    },
+    boostVideo(videoEl, gainLevel) {
+      boostVideoVolume(videoEl, gainLevel);
     },
     onChange(cb) {
       listeners.add(cb);
