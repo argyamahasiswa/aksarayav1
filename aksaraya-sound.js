@@ -1,5 +1,7 @@
 (function () {
-  const VIDEO_BOOST_LEVEL = 7.0; // Ubah angka ini (misal 6.0 - 9.0) jika ingin lebih keras lagi
+  const VIDEO_BOOST_LEVEL = 7.0; // Penguat suara video materi Pos 1-3 (700%)
+  const QUIZ_BOOST_LEVEL = 2.2; // Penguat suara backsound-kuis.mp3 (220%, ubah 1.5 - 3.5 sesuai selera)
+  const MAIN_VOLUME = 0.45; // Volume backsound utama di dashboard, peta, & peringkat
 
   const currentScript = document.currentScript;
   const scriptBase =
@@ -46,16 +48,13 @@
       const ctx = new AudioCtx();
       const source = ctx.createMediaElementSource(videoEl);
 
-      // Pangkas dengung frekuensi rendah agar suara penjelasan tetap jernih
       const highpass = ctx.createBiquadFilter();
       highpass.type = "highpass";
       highpass.frequency.value = 85;
 
-      // Penguat volume utama (7.0 = 700% dari volume maksimal browser)
       const gainNode = ctx.createGain();
       gainNode.gain.value = gainLevel;
 
-      // Limiter pengaman agar suara keras tidak pecah/sember
       const limiter = ctx.createDynamicsCompressor();
       limiter.threshold.value = -1.0;
       limiter.knee.value = 3.0;
@@ -147,13 +146,55 @@
 
   const mainAudio = new Audio(MAIN_SRC);
   mainAudio.loop = true;
-  mainAudio.volume = 0.35;
+  mainAudio.volume = MAIN_VOLUME;
   mainAudio.preload = "auto";
 
   const quizAudio = new Audio(QUIZ_SRC);
   quizAudio.loop = true;
-  quizAudio.volume = 0.35;
-  quizAudio.preload = "metadata";
+  quizAudio.volume = 1.0;
+  quizAudio.preload = "auto";
+
+  // ==========================================
+  // PENGUAT SUARA KHUSUS BACKSOUND KUIS
+  // ==========================================
+  let quizAudioCtx = null;
+  let quizBoostConnected = false;
+
+  function ensureQuizBoost() {
+    quizAudio.volume = 1.0;
+    if (window.location.protocol === "file:") return;
+
+    try {
+      if (!quizBoostConnected) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+
+        quizAudioCtx = new AudioCtx();
+        const source = quizAudioCtx.createMediaElementSource(quizAudio);
+
+        const gainNode = quizAudioCtx.createGain();
+        gainNode.gain.value = QUIZ_BOOST_LEVEL;
+
+        const limiter = quizAudioCtx.createDynamicsCompressor();
+        limiter.threshold.value = -1.5;
+        limiter.knee.value = 4.0;
+        limiter.ratio.value = 10.0;
+        limiter.attack.value = 0.003;
+        limiter.release.value = 0.2;
+
+        source.connect(gainNode);
+        gainNode.connect(limiter);
+        limiter.connect(quizAudioCtx.destination);
+        quizBoostConnected = true;
+      }
+
+      if (quizAudioCtx && quizAudioCtx.state === "suspended") {
+        quizAudioCtx.resume().catch(() => {});
+      }
+    } catch (e) {
+      console.warn("Penguat backsound kuis menggunakan volume standar:", e);
+    }
+  }
 
   let quizAudioFailed = false;
   quizAudio.addEventListener("error", () => {
@@ -274,6 +315,10 @@
     const active = getActiveAudio();
     const inactive = active === quizAudio ? mainAudio : quizAudio;
     inactive.pause();
+
+    if (active === quizAudio) {
+      ensureQuizBoost();
+    }
 
     try {
       await active.play();
