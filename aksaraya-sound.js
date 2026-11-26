@@ -1,17 +1,21 @@
 (function () {
   const currentScript = document.currentScript;
+  const scriptBase =
+    currentScript && currentScript.src
+      ? currentScript.src
+      : window.location.href;
   const customSrc = currentScript
     ? currentScript.getAttribute("data-audio")
     : null;
 
   const SOUND_KEY = "aksarayaSoundEnabled";
   const TIME_KEY = "aksarayaSoundTime";
-  const MAIN_SRC = "assets/backsound.mp3";
+  const MAIN_SRC = new URL("assets/backsound.mp3", scriptBase).href;
   const QUIZ_SRC =
-    customSrc && customSrc !== MAIN_SRC
-      ? customSrc
-      : "assets/backsound-kuis.mp3";
-  const isQuizPage = Boolean(customSrc && customSrc !== MAIN_SRC);
+    customSrc && customSrc !== "assets/backsound.mp3"
+      ? new URL(customSrc, scriptBase).href
+      : new URL("assets/backsound-kuis.mp3", scriptBase).href;
+  const isQuizPage = Boolean(customSrc && customSrc !== "assets/backsound.mp3");
 
   function areAllVideosHidden() {
     const videos = Array.from(document.querySelectorAll("video"));
@@ -19,7 +23,6 @@
     return videos.every((v) => v.offsetParent === null);
   }
 
-  // Jika dibuka di dalam iframe induk (misalnya app.html), sinkronkan ke pengelola suara induk
   let parentSound = null;
   try {
     if (
@@ -35,7 +38,6 @@
     window.AksaRayaSound = parentSound;
 
     if (!isQuizPage) {
-      // Halaman non-kuis (dashboard, petualangan, papan peringkat) otomatis lanjut backsound utama
       parentSound.playIfEnabled?.();
       return;
     }
@@ -81,11 +83,10 @@
     return;
   }
 
-  // Inisialisasi pemutar utama (dashboard, petualangan, papan peringkat) dan pemutar khusus kuis
   const mainAudio = new Audio(MAIN_SRC);
   mainAudio.loop = true;
   mainAudio.volume = 0.35;
-  mainAudio.preload = "metadata";
+  mainAudio.preload = "auto";
 
   const quizAudio = new Audio(QUIZ_SRC);
   quizAudio.loop = true;
@@ -108,7 +109,6 @@
     }
   } catch (e) {}
 
-  // Lanjutkan posisi detik terakhir untuk backsound utama
   try {
     const savedTime = parseFloat(sessionStorage.getItem(TIME_KEY) || "0");
     if (!Number.isNaN(savedTime) && savedTime > 0) {
@@ -131,12 +131,58 @@
   let pausedByVideo = false;
   let isQuizMode = isQuizPage;
   let quizReady = !isQuizPage || areAllVideosHidden();
+  let unmuteBanner = null;
 
   function getActiveAudio() {
     if (isQuizMode && !quizAudioFailed) {
       return quizAudio;
     }
     return mainAudio;
+  }
+
+  function removeUnmuteBanner() {
+    if (unmuteBanner) {
+      unmuteBanner.remove();
+      unmuteBanner = null;
+    }
+  }
+
+  function showUnmuteBanner() {
+    if (unmuteBanner || !enabled || isQuizMode) return;
+    const mount = () => {
+      if (unmuteBanner || !document.body) return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.id = "aksarayaUnmuteFallback";
+      btn.textContent = "🔊 Nyalakan Backsound";
+      Object.assign(btn.style, {
+        position: "fixed",
+        bottom: "18px",
+        right: "18px",
+        zIndex: "9999",
+        padding: "10px 16px",
+        borderRadius: "999px",
+        border: "1px solid rgba(253, 224, 71, 0.75)",
+        background: "rgba(15, 23, 42, 0.92)",
+        color: "#fef08a",
+        fontWeight: "700",
+        fontSize: "13px",
+        cursor: "pointer",
+        boxShadow: "0 8px 20px rgba(0, 0, 0, 0.4)",
+      });
+      btn.addEventListener("click", async () => {
+        const ok = await syncPlay();
+        if (ok) removeUnmuteBanner();
+      });
+      document.body.appendChild(btn);
+      unmuteBanner = btn;
+    };
+
+    if (document.body) {
+      mount();
+    } else {
+      document.addEventListener("DOMContentLoaded", mount, { once: true });
+    }
   }
 
   function notify() {
@@ -159,6 +205,7 @@
     if (!enabled || pausedByVideo || (isQuizMode && !quizReady)) {
       mainAudio.pause();
       quizAudio.pause();
+      removeUnmuteBanner();
       return false;
     }
 
@@ -168,6 +215,7 @@
 
     try {
       await active.play();
+      removeUnmuteBanner();
       return true;
     } catch (err) {
       return false;
@@ -175,19 +223,23 @@
   }
 
   function armUnlockOnGesture() {
+    showUnmuteBanner();
+    const events = ["pointerdown", "touchstart", "keydown"];
     const unlock = async () => {
       if (!enabled || pausedByVideo || (isQuizMode && !quizReady)) return;
       const ok = await syncPlay();
       if (ok) {
-        document.removeEventListener("pointerdown", unlock);
-        document.removeEventListener("keydown", unlock);
+        removeUnmuteBanner();
+        events.forEach((evt) =>
+          document.removeEventListener(evt, unlock, true),
+        );
       }
     };
-    document.addEventListener("pointerdown", unlock);
-    document.addEventListener("keydown", unlock);
+    events.forEach((evt) =>
+      document.addEventListener(evt, unlock, { capture: true, passive: true }),
+    );
   }
 
-  // Jeda otomatis saat video materi diputar
   document.addEventListener(
     "play",
     (event) => {
@@ -200,7 +252,6 @@
     true,
   );
 
-  // Lanjutkan bila video dijeda saat sudah masuk mode soal
   document.addEventListener(
     "pause",
     (event) => {
@@ -214,7 +265,6 @@
     true,
   );
 
-  // Nyalakan backsound kuis saat video materi selesai
   document.addEventListener(
     "ended",
     (event) => {
@@ -232,7 +282,6 @@
     true,
   );
 
-  // Deteksi klik tombol mulai kuis saat area video disembunyikan
   document.addEventListener("click", () => {
     if (!isQuizPage || quizReady) return;
     setTimeout(() => {
@@ -298,6 +347,7 @@
       quizAudio.currentTime = 0;
       if (!enabled) {
         mainAudio.pause();
+        removeUnmuteBanner();
         return false;
       }
       const ok = await syncPlay();
