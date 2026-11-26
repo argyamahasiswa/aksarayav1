@@ -19,7 +19,7 @@
     return videos.every((v) => v.offsetParent === null);
   }
 
-  // Cek apakah halaman ini dibuka di dalam iframe induk (misalnya app.html)
+  // Jika dibuka di dalam iframe induk (misalnya app.html), sinkronkan ke pengelola suara induk
   let parentSound = null;
   try {
     if (
@@ -31,54 +31,57 @@
     }
   } catch (e) {}
 
-  // Jika dibuka di dalam iframe app.html, hubungkan langsung ke pengelola suara induk
   if (parentSound) {
     window.AksaRayaSound = parentSound;
 
-    if (isQuizPage) {
-      if (areAllVideosHidden()) {
-        parentSound.playQuizBacksound?.();
-      } else {
-        parentSound.pauseTemp?.();
-      }
-
-      document.addEventListener(
-        "play",
-        (event) => {
-          if (event.target && event.target.tagName === "VIDEO") {
-            parentSound.pauseTemp?.();
-          }
-        },
-        true,
-      );
-
-      document.addEventListener(
-        "ended",
-        (event) => {
-          if (event.target && event.target.tagName === "VIDEO") {
-            parentSound.playQuizBacksound?.();
-          }
-        },
-        true,
-      );
-
-      document.addEventListener("click", () => {
-        setTimeout(() => {
-          if (areAllVideosHidden()) {
-            document.querySelectorAll("video").forEach((v) => {
-              try {
-                v.pause();
-              } catch (e) {}
-            });
-            parentSound.playQuizBacksound?.();
-          }
-        }, 30);
-      });
+    if (!isQuizPage) {
+      // Halaman non-kuis (dashboard, petualangan, papan peringkat) otomatis lanjut backsound utama
+      parentSound.playIfEnabled?.();
+      return;
     }
+
+    if (areAllVideosHidden()) {
+      parentSound.playQuizBacksound?.();
+    } else {
+      parentSound.pauseTemp?.();
+    }
+
+    document.addEventListener(
+      "play",
+      (event) => {
+        if (event.target && event.target.tagName === "VIDEO") {
+          parentSound.pauseTemp?.();
+        }
+      },
+      true,
+    );
+
+    document.addEventListener(
+      "ended",
+      (event) => {
+        if (event.target && event.target.tagName === "VIDEO") {
+          parentSound.playQuizBacksound?.();
+        }
+      },
+      true,
+    );
+
+    document.addEventListener("click", () => {
+      setTimeout(() => {
+        if (areAllVideosHidden()) {
+          document.querySelectorAll("video").forEach((v) => {
+            try {
+              v.pause();
+            } catch (e) {}
+          });
+          parentSound.playQuizBacksound?.();
+        }
+      }, 30);
+    });
     return;
   }
 
-  // Inisialisasi pemutar utama (dashboard & peta petualangan) dan pemutar khusus kuis
+  // Inisialisasi pemutar utama (dashboard, petualangan, papan peringkat) dan pemutar khusus kuis
   const mainAudio = new Audio(MAIN_SRC);
   mainAudio.loop = true;
   mainAudio.volume = 0.35;
