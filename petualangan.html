@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AksaRaya - Peta Petualangan</title>
+    <link rel="stylesheet" href="petualangan.css" />
+    <style>
+      /* Kotak Rincian Benar & Salah pada Kartu Tiap Pos */
+      .pos-breakdown {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: rgba(15, 23, 42, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 12px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .pos-breakdown[hidden] {
+        display: none !important;
+      }
+      .pos-breakdown .res-benar {
+        color: #34d399;
+      }
+      .pos-breakdown .res-salah {
+        color: #fb7185;
+      }
+      .pos-breakdown .res-divider {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="adventure-viewport">
+      <!-- Navigasi Atas HUD Bar (Rapi & Sejajar) -->
+      <nav class="hud-navbar" aria-label="Navigasi Utama">
+        <div class="hud-left">
+          <button
+            class="btn-hud-back"
+            id="backButton"
+            type="button"
+            onclick="window.location.href = 'dashboard.html'"
+          >
+            <span class="icon">←</span>
+            <span>Kembali</span>
+          </button>
+
+          <div class="brand-box">
+            <img
+              src="assets/logo-aksaraya.png"
+              alt="Logo AksaRaya"
+              class="brand-logo"
+            />
+            <span class="brand-title">AksaRaya</span>
+          </div>
+        </div>
+
+        <div class="hud-right">
+          <div class="player-pill">
+            <span class="player-avatar">🧙‍♂️</span>
+            <div class="player-meta">
+              <span class="player-role">PETUALANG</span>
+              <strong class="player-name" id="hudPlayerName">Kanca Aksa</strong>
+            </div>
+          </div>
+
+          <div class="chapter-badge">
+            <span class="badge-icon">🗺️</span>
+            <span>PETA MISI</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Header Pembuka -->
+      <header class="hero-header">
+        <div class="hero-badge">
+          <span>✦</span>
+          <span>PETUALANGAN AKSARA JAWA</span>
+          <span>✦</span>
+        </div>
+        <h1 class="hero-title">Peta <span>Petualangan</span></h1>
+        <p class="hero-subtitle">
+          Rampungake saben misi ing ngisor iki kanggo mbukak dalan sabanjure!
+        </p>
+      </header>
+
+      <!-- Panel Progres XP -->
+      <section
+        class="progress-card card-glass"
+        aria-label="Progres Petualangan"
+      >
+        <div class="progress-header">
+          <div class="progress-info">
+            <span class="trophy-icon">🏆</span>
+            <div>
+              <p class="kicker-label">PROGRES PERJALANAN</p>
+              <h2>Progres Misi</h2>
+            </div>
+          </div>
+          <span class="progress-count-pill" id="progressText"
+            >0 dari 3 pos selesai</span
+          >
+        </div>
+
+        <div class="progress-track" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="progress-footer">
+          <span>🌱 Wiwiti saka langkah cilik!</span>
+          <span class="total-tag">3 MISI UTAMA</span>
+        </div>
+      </section>
+
+      <!-- Grid 3 Pos Misi (Simetris & Presisi) -->
+      <section class="map-zone" aria-label="Daftar Misi">
+        <div class="zone-title-bar">
+          <h2>Jalur Misi Aksara</h2>
+          <span class="compass-icon">🧭</span>
+        </div>
+
+        <div class="pos-grid">
+          <!-- POS 01 -->
+          <article class="pos-card pos-open" id="pos1Card">
+            <div class="card-banner theme-pos1">
+              <span class="pos-number-tag">POS 01</span>
+              <span class="status-badge" id="pos1Status">★ TERBUKA</span>
+              <div class="banner-avatar">🏯</div>
+            </div>
+
+            <div class="card-body">
+              <span class="mission-kicker">MISI PERTAMA</span>
+              <h3>Kenalan karo Aksara</h3>
+              <p class="card-desc">
+                Ayo kenali aksara Jawa legena lan wiwiti petualanganmu!
+              </p>
+
+              <div class="feature-chips">
+                <span>▶ Video</span>
+                <span>✓ Benar/Salah</span>
+              </div>
+
+              <!-- Rincian Benar & Salah Pos 1 -->
+              <div class="pos-breakdown" id="pos1Breakdown" hidden></div>
+
+              <button class="btn-pos-action" id="pos1Button" type="button">
+                <span>Mulai Misi</span>
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- POS 02 -->
+          <article class="pos-card pos-locked" id="pos2Card">
+            <div class="card-banner theme-pos2">
+              <span class="pos-number-tag">POS 02</span>
+              <span class="status-badge" id="pos2Status">🔒 TERKUNCI</span>
+              <div class="banner-avatar">📜</div>
+            </div>
+
+            <div class="card-body">
+              <span class="mission-kicker">MISI KEDUA</span>
+              <h3>Sinau Sandhangan</h3>
+              <p class="card-desc">
+                Sinaua sandhangan kanggo maca lan nulis aksara Jawa.
+              </p>
+
+              <div class="feature-chips">
+                <span>▶ Video</span>
+                <span>☷ Pilihan Ganda</span>
+              </div>
+
+              <!-- Rincian Benar & Salah Pos 2 -->
+              <div class="pos-breakdown" id="pos2Breakdown" hidden></div>
+
+              <button
+                class="btn-pos-action"
+                id="pos2Button"
+                type="button"
+                disabled
+              >
+                <span>Selesaikan Pos 1 Dahulu</span>
+                <span class="btn-arrow">🔒</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- POS 03 -->
+          <article class="pos-card pos-locked" id="pos3Card">
+            <div class="card-banner theme-pos3">
+              <span class="pos-number-tag">POS 03</span>
+              <span class="status-badge" id="pos3Status">🔒 TERKUNCI</span>
+              <div class="banner-avatar">💎</div>
+            </div>
+
+            <div class="card-body">
+              <span class="mission-kicker">MISI PAMUNGKAS</span>
+              <h3>Tantangan Aksara</h3>
+              <p class="card-desc">
+                Siapna awakmu kanggo ngrampungake tantangan pungkasan!
+              </p>
+
+              <div class="feature-chips">
+                <span>▶ Video</span>
+                <span>⠿ Drag & Drop</span>
+              </div>
+
+              <!-- Rincian Benar & Salah Pos 3 -->
+              <div class="pos-breakdown" id="pos3Breakdown" hidden></div>
+
+              <button
+                class="btn-pos-action"
+                id="pos3Button"
+                type="button"
+                disabled
+              >
+                <span>Selesaikan Pos 2 Dahulu</span>
+                <span class="btn-arrow">🔒</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Banner Rekapitulasi Akhir (3 Pos Selesai) -->
+      <section class="victory-banner card-glass" id="completionBanner" hidden>
+        <div class="victory-wrapper">
+          <div class="victory-crown">👑</div>
+          <div class="victory-text">
+            <h2>Selamat! Petualangan Selesai! 🎉</h2>
+            <p>Hore, kowe wis ngrampungake kabeh 3 misi ing AksaRaya!</p>
+            <div class="victory-stats">
+              <span class="stat-pill"
+                >Total Skor: <strong id="totalScoreText">0</strong> Pts</span
+              >
+              <span class="stat-pill"
+                >Total Wektu: <strong id="totalTimeText">00:00</strong></span
+              >
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn-victory"
+            id="btnKirimData"
+            onclick="kirimDataKeDatabase()"
+          >
+            Simpan & Deleng Peringkat 🏆
+          </button>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <span class="footer-symbol">ꦄ</span>
+        <p>AksaRaya · Sinau Aksara Jawa Dadi Luwih Nyenengake 🌱</p>
+      </footer>
+    </main>
+
+    <script src="aksaraya-sound.js"></script>
+    <script src="click-sound.js"></script>
+    <script src="petualangan.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Nyalakan kembali backsound baik saat di dalam iframe maupun dibuka langsung
+        if (
+          window.AksaRayaSound &&
+          typeof window.AksaRayaSound.playIfEnabled === "function"
+        ) {
+          window.AksaRayaSound.playIfEnabled();
+        }
+
+        // 1. Load nama siswa di HUD Navigation
+        const namaSiswa =
+          sessionStorage.getItem("namaSiswa") ||
+          sessionStorage.getItem("nama_siswa");
+        if (namaSiswa) {
+          const el = document.getElementById("hudPlayerName");
+          if (el) el.textContent = namaSiswa;
+        }
+
+        // 2. Tampilkan rincian jumlah Benar & Salah pada setiap Pos yang sudah selesai
+        [1, 2, 3].forEach((posNum) => {
+          const skor = sessionStorage.getItem(`skor_pos${posNum}`);
+          const box = document.getElementById(`pos${posNum}Breakdown`);
+          if (!box || skor === null) return;
+
+          let benar = sessionStorage.getItem(`benar_pos${posNum}`);
+          let salah = sessionStorage.getItem(`salah_pos${posNum}`);
+
+          // Hitung otomatis untuk Pos 1 jika dibuka sebelum pos1.js menyimpan benar_pos1
+          if ((benar === null || salah === null) && posNum === 1) {
+            benar = Math.round(Number(skor) / 2);
+            salah = 10 - Number(benar);
+          }
+
+          if (benar !== null && salah !== null) {
+            box.innerHTML = `
+              <span class="res-benar">✓ Bener: <strong>${benar}</strong></span>
+              <span class="res-divider">•</span>
+              <span class="res-salah">✕ Luput: <strong>${salah}</strong></span>
+            `;
+            box.hidden = false;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

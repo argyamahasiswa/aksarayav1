@@ -1,0 +1,1072 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap");
+
+:root {
+  --senja-gelap: #1e1b4b;
+  --senja-hangat: #f59e0b;
+  --aksen-emas: #fbbf24;
+
+  --kaca-panel: rgba(15, 23, 42, 0.75);
+  --kaca-border: rgba(245, 158, 11, 0.35);
+
+  --teks-terang: #f8fafc;
+  --teks-meredup: #cbd5e1;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+  color: var(--teks-terang);
+  background-color: var(--senja-gelap);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dashboard-page {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 80px 24px 40px;
+  overflow: hidden;
+
+  background:
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.35), rgba(30, 27, 75, 0.65)),
+    url("assets/bg-login.jpeg") center/cover no-repeat fixed;
+}
+
+.dashboard-page::before {
+  content: "✦       ✧          ✦          ✧       ✦";
+  position: absolute;
+  z-index: -1;
+  inset: 15% 0 auto;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: clamp(18px, 2.5vw, 32px);
+  letter-spacing: 30px;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+  pointer-events: none;
+  animation: starPulse 4s ease-in-out infinite alternate;
+}
+
+.dashboard-page::after {
+  content: "ꦲ  ꦤ  ꦕ  ꦫ  ꦏ";
+  position: absolute;
+  z-index: -1;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(251, 191, 36, 0.25);
+  font-size: clamp(18px, 2.4vw, 26px);
+  font-weight: 900;
+  letter-spacing: 15px;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+/* ========================================
+   MENU ATAS (BUBBLE LINGKARAN BESAR VERTIKAL)
+======================================== */
+.top-menu {
+  position: absolute;
+  z-index: 5;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2px solid var(--kaca-border);
+  border-radius: 50%;
+  color: var(--teks-terang);
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.menu-button:hover {
+  transform: scale(1.12);
+  background: rgba(30, 41, 59, 0.95);
+  border-color: var(--aksen-emas);
+  box-shadow: 0 14px 30px rgba(245, 158, 11, 0.4);
+}
+
+.menu-button:active {
+  transform: scale(0.95);
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  color: #1e1b4b;
+  font-size: 26px;
+  font-weight: 900;
+  box-shadow: inset 0 3px 6px rgba(255, 255, 255, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.menu-button:hover .menu-icon {
+  transform: rotate(12deg);
+}
+
+/* ========================================
+   KONTEN UTAMA
+======================================== */
+.dashboard-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dashboard-logo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(90vw, 620px);
+  max-height: 300px;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 15px rgba(245, 158, 11, 0.3));
+  animation: logoHover 5s ease-in-out infinite;
+}
+
+.welcome-name {
+  margin: 10px 0 8px;
+  font-size: clamp(26px, 3.8vw, 44px);
+  font-weight: 900;
+  text-align: center;
+  background: linear-gradient(to right, #fef08a, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+  animation: fadeUp 0.8s 0.15s both;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-tagline {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+  margin: 5px 0 32px;
+  padding: 10px 24px;
+
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--kaca-border);
+  border-radius: 99px;
+
+  color: var(--aksen-emas);
+  font-size: clamp(14px, 1.6vw, 17px);
+  font-weight: 800;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  animation: fadeUp 0.8s 0.25s both;
+}
+
+.start-button {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 300px;
+  padding: 16px 35px;
+  border-radius: 16px;
+  overflow: hidden;
+
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  color: #1e1b4b;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35);
+  transition: all 0.25s ease;
+  animation: fadeUp 0.8s 0.35s both;
+}
+
+.start-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5);
+  filter: brightness(1.08);
+}
+
+.start-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* ========================================
+   POPUP & MODAL
+======================================== */
+.popup[hidden] {
+  display: none !important;
+}
+
+.popup {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.84);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.popup-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 38px 28px 28px;
+
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid var(--kaca-border);
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.close-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+
+  background: transparent;
+  color: var(--teks-terang);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 900;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: rotate(90deg);
+}
+
+/* ========================================
+   KONTEN INFORMASI & FAQ
+======================================== */
+.info-card-wide {
+  max-width: 600px;
+  padding: 30px 20px 20px;
+}
+
+.aksara-title {
+  font-size: 34px !important;
+  color: var(--aksen-emas) !important;
+  margin-bottom: 4px !important;
+}
+
+.scrollable-content {
+  text-align: left;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 12px;
+  margin-top: 20px;
+}
+
+.scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: var(--aksen-emas);
+  border-radius: 10px;
+}
+
+.info-section {
+  margin-bottom: 24px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.info-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.info-text {
+  color: var(--teks-meredup);
+  line-height: 1.6;
+  font-size: 13.5px;
+  margin: 0;
+}
+
+.tp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tp-list li {
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 3px solid var(--aksen-emas);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 0 12px 12px 0;
+  color: var(--teks-meredup);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.tp-list li strong {
+  color: var(--aksen-emas);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+/* ========================================
+   PROFIL PENGEMBANG (GAMBAR UTUH + HOVER GLOW)
+======================================== */
+.dev-showcase-box {
+  position: relative;
+  width: min(95vw, 1060px);
+  border-radius: 20px;
+  border: 2px solid #eab308;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+  background: #1c0c03;
+  animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dev-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #fbbf24;
+  background: rgba(30, 15, 5, 0.88);
+  color: #fef08a;
+  font-size: 16px;
+  font-weight: 900;
+  z-index: 15;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.dev-close-btn:hover {
+  transform: scale(1.1) rotate(90deg);
+  background: #b45309;
+}
+
+.dev-cover-stage {
+  position: relative;
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.dev-cover-base {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  user-select: none;
+}
+
+/* Hotspot menutupi penuh bingkai tiap kartu dari atas ke bawah */
+.dev-card-hotspot {
+  position: absolute;
+  top: 47.4%;
+  height: 48.2%;
+  width: 13.9%;
+  border-radius: clamp(16px, 2vw, 24px);
+  background: transparent;
+  border: 2px solid transparent;
+  overflow: hidden;
+  z-index: 5;
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.dev-card-hotspot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(254, 249, 195, 0.34) 50%,
+    transparent 80%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.dev-card-hotspot:hover {
+  border-color: rgba(254, 240, 138, 0.95);
+  background-color: rgba(253, 224, 71, 0.08);
+  box-shadow:
+    0 0 22px rgba(250, 204, 21, 0.85),
+    inset 0 0 16px rgba(254, 240, 138, 0.35);
+}
+
+.dev-card-hotspot:hover::after {
+  transform: translateX(130%);
+}
+
+.dev-card-hotspot:active {
+  transform: scale(0.985);
+}
+
+.dev-card-hotspot.card-1 {
+  left: 4.5%;
+}
+.dev-card-hotspot.card-2 {
+  left: 19.96%;
+}
+.dev-card-hotspot.card-3 {
+  left: 35.42%;
+}
+.dev-card-hotspot.card-4 {
+  left: 50.88%;
+}
+.dev-card-hotspot.card-5 {
+  left: 66.34%;
+}
+.dev-card-hotspot.card-6 {
+  left: 81.8%;
+}
+
+/* ========================================
+   MODAL SLIDE DETAIL INTERAKTIF (TAMPILAN BESAR & BERSIH)
+======================================== */
+.dev-slide-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(69, 26, 3, 0.9) 0%,
+    rgba(10, 6, 3, 0.97) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  z-index: 40;
+  animation: fadeIn 0.25s ease;
+}
+
+.dev-slide-overlay[hidden] {
+  display: none !important;
+}
+
+.dev-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dev-particles span {
+  position: absolute;
+  bottom: -20px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fef08a 0%, #f59e0b 100%);
+  box-shadow: 0 0 10px #fbbf24;
+  opacity: 0;
+  animation: emberFloat 7s infinite ease-in;
+}
+
+.dev-particles span:nth-child(1) {
+  left: 12%;
+  animation-delay: 0s;
+  animation-duration: 6.5s;
+}
+.dev-particles span:nth-child(2) {
+  left: 25%;
+  width: 8px;
+  height: 8px;
+  animation-delay: 1.4s;
+  animation-duration: 8s;
+}
+.dev-particles span:nth-child(3) {
+  left: 38%;
+  animation-delay: 2.8s;
+  animation-duration: 6s;
+}
+.dev-particles span:nth-child(4) {
+  left: 52%;
+  width: 5px;
+  height: 5px;
+  animation-delay: 0.7s;
+  animation-duration: 7.5s;
+}
+.dev-particles span:nth-child(5) {
+  left: 65%;
+  width: 7px;
+  height: 7px;
+  animation-delay: 3.1s;
+  animation-duration: 6.8s;
+}
+.dev-particles span:nth-child(6) {
+  left: 78%;
+  animation-delay: 1.9s;
+  animation-duration: 8.2s;
+}
+.dev-particles span:nth-child(7) {
+  left: 88%;
+  width: 5px;
+  height: 5px;
+  animation-delay: 4s;
+  animation-duration: 7s;
+}
+.dev-particles span:nth-child(8) {
+  left: 46%;
+  width: 8px;
+  height: 8px;
+  animation-delay: 2.2s;
+  animation-duration: 8.5s;
+}
+
+.dev-slide-wrapper {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 98vw;
+  max-height: 98vh;
+}
+
+/* Top Bar: Badge Nomor Urut + Nama + Tutup */
+.dev-slide-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
+  z-index: 30;
+}
+
+.dev-slide-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 15px 5px 7px;
+  border-radius: 99px;
+  background: rgba(30, 15, 5, 0.9);
+  border: 1.5px solid rgba(251, 191, 36, 0.55);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+.dev-slide-badge {
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #fde047, #d97706);
+  color: #291002;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.dev-slide-name {
+  color: #fef9c3;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.dev-slide-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #fde047;
+  background: rgba(30, 15, 5, 0.92);
+  color: #fef08a;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  transition:
+    transform 0.22s ease,
+    background 0.22s ease;
+}
+
+.dev-slide-close:hover {
+  background: #b45309;
+  transform: rotate(90deg) scale(1.08);
+}
+
+/* Panggung Kartu Besar + Panah Samping */
+.dev-slide-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  perspective: 1400px;
+}
+
+.dev-slide-card {
+  position: relative;
+  width: fit-content;
+  border-radius: 18px;
+  border: 2.5px solid #facc15;
+  overflow: hidden;
+  background: #2b1204;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.25s ease;
+  animation: borderGlow 3.2s ease-in-out infinite alternate;
+}
+
+.dev-slide-card.anim-next {
+  animation:
+    slideEnterNext 0.42s cubic-bezier(0.22, 1, 0.36, 1) both,
+    borderGlow 3.2s ease-in-out infinite alternate;
+}
+
+.dev-slide-card.anim-prev {
+  animation:
+    slideEnterPrev 0.42s cubic-bezier(0.22, 1, 0.36, 1) both,
+    borderGlow 3.2s ease-in-out infinite alternate;
+}
+
+.dev-slide-img {
+  display: block;
+  width: auto;
+  max-width: min(86vw, 1220px);
+  max-height: calc(100vh - 122px);
+  max-height: calc(100svh - 122px);
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.dev-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 251, 235, 0.22) 0%,
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.dev-slide-card:hover .dev-card-glare {
+  opacity: 1;
+}
+
+/* Tombol Panah Navigasi */
+.dev-slide-arrow {
+  position: relative;
+  z-index: 25;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid #facc15;
+  background: linear-gradient(
+    145deg,
+    rgba(69, 26, 3, 0.94),
+    rgba(30, 15, 5, 0.96)
+  );
+  color: #fef08a;
+  font-size: 16px;
+  font-weight: 900;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.65);
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.dev-slide-arrow:hover {
+  background: linear-gradient(135deg, #fde047, #f59e0b);
+  color: #451a03;
+  transform: scale(1.12);
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.75);
+}
+
+.dev-slide-arrow:active {
+  transform: scale(0.95);
+}
+
+/* Bar Pemilih Cepat 6 Anggota di Bawah */
+.dev-roster-bar {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: rgba(24, 10, 3, 0.9);
+  border: 1.5px solid rgba(250, 204, 21, 0.38);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.dev-roster-pill {
+  padding: 5px 12px;
+  border-radius: 99px;
+  background: rgba(254, 240, 138, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  color: #fde68a;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.22s ease;
+}
+
+.dev-roster-pill:hover {
+  background: rgba(250, 204, 21, 0.22);
+  border-color: #fde047;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.dev-roster-pill.active {
+  background: linear-gradient(135deg, #fde047, #d97706);
+  border-color: #fef9c3;
+  color: #291002;
+  font-weight: 900;
+  box-shadow: 0 4px 14px rgba(250, 204, 21, 0.45);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   ANIMASI
+======================================== */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logoHover {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes starPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideEnterNext {
+  0% {
+    opacity: 0;
+    transform: translateX(48px) rotateY(-10deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+  }
+}
+
+@keyframes slideEnterPrev {
+  0% {
+    opacity: 0;
+    transform: translateX(-48px) rotateY(10deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    box-shadow:
+      0 18px 45px rgba(0, 0, 0, 0.78),
+      0 0 18px rgba(250, 204, 21, 0.35);
+  }
+  100% {
+    box-shadow:
+      0 22px 52px rgba(0, 0, 0, 0.85),
+      0 0 32px rgba(250, 204, 21, 0.7);
+  }
+}
+
+@keyframes emberFloat {
+  0% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-92vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* ========================================
+   RESPONSIVE KHUSUS LAYAR HP (PORTRAIT & LANDSCAPE)
+======================================== */
+@media (max-width: 640px) {
+  .dashboard-page {
+    padding: 92px 16px 32px;
+  }
+
+  .top-menu {
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .menu-button {
+    width: 46px;
+    height: 46px;
+  }
+
+  .menu-icon {
+    font-size: 20px;
+  }
+
+  .start-button {
+    min-width: 0;
+    width: min(100%, 300px);
+    padding: 14px 24px;
+    font-size: 14.5px;
+  }
+
+  .dev-close-btn {
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .dev-slide-stage {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .dev-slide-card {
+    order: 1;
+  }
+
+  .dev-slide-img {
+    max-width: 92vw;
+    max-height: 54vh;
+  }
+
+  .dev-slide-arrow {
+    order: 2;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .dev-roster-pill {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .dashboard-page {
+    padding: 16px 20px 16px 80px;
+  }
+
+  .top-menu {
+    top: 12px;
+    left: 12px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .menu-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .menu-icon {
+    font-size: 18px;
+  }
+
+  .dashboard-logo {
+    max-height: 125px;
+  }
+
+  .welcome-name {
+    font-size: 22px;
+    margin: 4px 0;
+  }
+
+  .dashboard-tagline {
+    margin: 4px 0 14px;
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+
+  .start-button {
+    min-width: 0;
+    padding: 10px 24px;
+    font-size: 13.5px;
+  }
+
+  .dev-slide-img {
+    max-width: 72vw;
+    max-height: 56vh;
+  }
+
+  .dev-roster-bar {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .dev-roster-pill {
+    padding: 3px 9px;
+    font-size: 11px;
+  }
+}

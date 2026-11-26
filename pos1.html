@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="jv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AksaRaya - Pos 1: Aksara Legena</title>
+    <link rel="stylesheet" href="pos1.css" />
+  </head>
+  <body>
+    <div class="page-container">
+      <!-- Header Navigasi -->
+      <header class="quiz-header">
+        <div class="pos-title">
+          <span class="badge">POS 01</span>
+          <h1>Aksara Legena</h1>
+        </div>
+
+        <div class="timer-box">
+          <span>⏱️</span>
+          <strong id="timerDisplay">00:00</strong>
+        </div>
+      </header>
+
+      <!-- Bagian 1: Video Pembelajaran -->
+      <section class="video-section" id="videoSection">
+        <div class="card-glass">
+          <h2>📜 Video Pembelajaran</h2>
+          <p>Semaaken video iki dhisik sadurunge miwiti kuis!</p>
+          <div class="video-wrapper">
+            <video controls id="learningVideo" poster="assets/bg-login.jpeg">
+              <source src="assets/pos1.mp4" type="video/mp4" />
+              Browser sampeyan ora nyengkuyung pamutaran video.
+            </video>
+          </div>
+          <button type="button" class="btn-primary" id="startQuizBtn">
+            Miwiti Kuis Pos 1 ➜
+          </button>
+        </div>
+      </section>
+
+      <!-- Bagian 2: Area Kuis -->
+      <main class="quiz-section" id="quizSection" hidden>
+        <!-- PANEL PROGRES KUIS -->
+        <div class="panel-progres-sederhana">
+          <div class="progres-info">
+            <span class="progres-label">Progres Kuis:</span>
+            <strong id="teksPersentase">0%</strong>
+            <span class="progres-detail" id="teksDetailSoal"
+              >(0 saka 10 dijawab)</span
+            >
+          </div>
+          <div class="progres-bar-bg">
+            <div class="progres-bar-fill" id="barProgresKuis"></div>
+          </div>
+        </div>
+
+        <div class="quiz-layout">
+          <!-- Panel Soal -->
+          <article class="question-card card-glass">
+            <div class="question-header">
+              <span class="q-number" id="qNumberText">Soal 1 saka 10</span>
+              <label class="ragu-checkbox">
+                <input type="checkbox" id="raguCheck" />
+                <span>⚠️ Ragu-ragu</span>
+              </label>
+            </div>
+
+            <div class="question-body">
+              <p id="questionText">Loading soal...</p>
+              <div class="aksara-preview" id="aksaraPreview">ꦲ</div>
+            </div>
+
+            <!-- Pilihan Benar / Salah -->
+            <div class="tf-options">
+              <button
+                type="button"
+                class="btn-tf btn-true"
+                id="btnTrue"
+                onclick="chooseAnswer(true)"
+              >
+                <span>✓</span> BENAR
+              </button>
+              <button
+                type="button"
+                class="btn-tf btn-false"
+                id="btnFalse"
+                onclick="chooseAnswer(false)"
+              >
+                <span>✕</span> SALAH
+              </button>
+            </div>
+
+            <!-- Navigasi Bawah -->
+            <div class="question-footer">
+              <button
+                type="button"
+                class="btn-nav"
+                id="prevBtn"
+                onclick="prevQuestion()"
+              >
+                ← Sadurunge
+              </button>
+              <button
+                type="button"
+                class="btn-nav"
+                id="nextBtn"
+                onclick="nextQuestion()"
+              >
+                Sabanjure →
+              </button>
+            </div>
+          </article>
+
+          <!-- Sidebar Nomor Soal -->
+          <aside class="number-sidebar card-glass">
+            <h3>Nomer Soal</h3>
+            <div class="number-grid" id="numberGrid"></div>
+            <button
+              type="button"
+              class="btn-submit"
+              id="submitBtn"
+              onclick="finishQuiz()"
+            >
+              Kumpulake Jawaban 🚀
+            </button>
+          </aside>
+        </div>
+      </main>
+
+      <!-- Pop-Up Peringatan -->
+      <div class="popup-overlay" id="warningPopup" hidden>
+        <div class="popup-card card-glass popup-warning">
+          <div class="popup-icon">⚠️</div>
+          <h2>Durung Bisa Dikumpulake!</h2>
+          <p class="warning-subtitle">
+            Iki ana catatan sing kudu digatekake dhisik:
+          </p>
+          <div class="warning-box" id="warningMessage"></div>
+          <button
+            type="button"
+            class="btn-primary btn-warning-action"
+            onclick="closeWarning()"
+          >
+            Cek Soal Maneh ✏️
+          </button>
+        </div>
+      </div>
+
+      <!-- Pop-Up Skor Akhir Pos 1 -->
+      <div class="popup-overlay" id="scorePopup" hidden>
+        <div class="popup-card card-glass">
+          <div class="popup-icon">🏆</div>
+          <h2>MISI POS 1 RAMPUNG</h2>
+          <p>Hore, kowe wis ngrampungake misi Aksara Legena.</p>
+
+          <div class="result-summary-box">
+            <div class="benar-salah-pill">
+              <span class="txt-benar"
+                >Benar: <strong id="finalCorrectText">0</strong></span
+              >
+              <span class="txt-sep">|</span>
+              <span class="txt-salah"
+                >Salah: <strong id="finalWrongText">0</strong></span
+              >
+            </div>
+
+            <div class="score-grid">
+              <div class="score-box">
+                <span>SKOR POS 1</span>
+                <strong id="finalScoreText">0</strong>
+              </div>
+              <div class="score-box">
+                <span>WAKTU PENGERJAAN</span>
+                <strong id="finalTimeText">00:00</strong>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="btn-primary"
+            onclick="window.location.href = 'petualangan.html'"
+          >
+            Lanjutkan ke Pos petualangan ▶
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="click-sound.js"></script>
+    <script src="pos1.js"></script>
+  </body>
+</html>

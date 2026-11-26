@@ -1,0 +1,499 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap");
+
+/* ========================================
+   1. PALET WARNA SELARAS BACKGROUND SENJA
+======================================== */
+:root {
+  --senja-gelap: #1e1b4b; /* Biru malam / ungu tua */
+  --senja-hangat: #f59e0b; /* Kuning keemasan matahari terbenam */
+  --kayu-pendopo: #78350f; /* Coklat kayu joglo */
+
+  --kaca-panel: rgba(15, 23, 42, 0.75); /* Panel kaca gelap elegan */
+  --kaca-border: rgba(245, 158, 11, 0.35); /* Garis emas tipis */
+
+  --teks-terang: #f8fafc;
+  --teks-meredup: #cbd5e1;
+
+  --aksen-emas: #fbbf24;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+  color: var(--teks-terang);
+  background-color: var(--senja-gelap);
+}
+
+/* ========================================
+   2. LATAR BELAKANG GAMBAR UTAMA
+======================================== */
+.login-page {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 40px 5%;
+  overflow: hidden;
+
+  /* Menggunakan gambar pemandangan candi & senja sebagai background */
+  background:
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(30, 27, 75, 0.6)),
+    url("assets/bg-login.jpeg") center/cover no-repeat fixed;
+}
+
+/* Efek debu cahaya magis tipis di udara */
+.login-page::before {
+  content: "✦       ✧          ✦          ✧       ✦";
+  position: absolute;
+  z-index: -1;
+  inset: 12% 0 auto;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: clamp(16px, 2.5vw, 28px);
+  letter-spacing: 30px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.floating {
+  display: none;
+}
+
+/* ========================================
+   3. TATA LETAK UTAMA
+======================================== */
+.login-container {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.95fr);
+  align-items: center;
+  gap: clamp(30px, 5vw, 70px);
+  width: min(100%, 1050px);
+  animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ========================================
+   4. BRANDING & LOGO
+======================================== */
+.brand {
+  position: relative;
+  text-align: center;
+}
+
+.logo {
+  width: min(100%, 420px);
+  max-height: 280px;
+  margin: 0 auto 18px;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 15px rgba(245, 158, 11, 0.3));
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.tagline {
+  display: inline-block;
+  padding: 10px 24px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--kaca-border);
+  border-radius: 99px;
+  color: var(--aksen-emas);
+  font-size: clamp(14px, 1.6vw, 17px);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   5. KARTU LOGIN (GLASSMORPHISM ELEGAN)
+======================================== */
+.login-card {
+  position: relative;
+  width: 100%;
+  padding: 38px 34px 30px;
+
+  background: var(--kaca-panel);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid var(--kaca-border);
+  border-radius: 26px;
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.decoration {
+  text-align: center;
+  color: var(--aksen-emas);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 8px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.bottom-decoration {
+  text-align: center;
+  color: var(--aksen-emas);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  margin-top: 22px;
+  opacity: 0.8;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 2.3vw, 28px);
+  font-weight: 900;
+  color: var(--teks-terang);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.welcome {
+  margin: 0 0 25px;
+  color: var(--teks-meredup);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ========================================
+   6. FORM & INPUT KELAS MENENGAH
+======================================== */
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--aksen-emas);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 500;
+}
+
+.form-group input:focus {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: var(--aksen-emas);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+}
+
+.pesan {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+.pesan:not(:empty) {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 10px;
+}
+
+/* ========================================
+   7. TOMBOL MASUK
+======================================== */
+.btn-masuk {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 10px;
+
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  border-radius: 14px;
+  color: #1e1b4b;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-masuk:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(245, 158, 11, 0.45);
+  filter: brightness(1.08);
+}
+
+.btn-masuk:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+
+.arrow {
+  transition: transform 0.2s;
+}
+.btn-masuk:hover .arrow {
+  transform: translateX(5px);
+}
+
+.footer-text {
+  text-align: center;
+  margin-top: 25px;
+  color: var(--teks-meredup);
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+/* ========================================
+   8. POP-UP KONFIRMASI
+======================================== */
+.confirm-overlay[hidden] {
+  display: none !important;
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.25s ease;
+}
+
+.confirm-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 36px 30px 28px;
+  text-align: center;
+
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid var(--kaca-border);
+  border-radius: 26px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.confirm-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 15px;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  color: #1e1b4b;
+  background: var(--aksen-emas);
+  border-radius: 50%;
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+}
+
+.confirm-decoration {
+  color: var(--aksen-emas);
+  font-size: 15px;
+  letter-spacing: 6px;
+  margin-bottom: 10px;
+}
+
+.confirm-card h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--teks-terang);
+}
+
+.confirm-description {
+  color: var(--teks-meredup);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.confirm-data {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.confirm-row:last-child {
+  margin-bottom: 0;
+}
+
+.confirm-row span {
+  color: var(--teks-meredup);
+  font-size: 13px;
+  font-weight: 600;
+}
+.confirm-row strong {
+  color: var(--aksen-emas);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-button,
+.confirm-button {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-button {
+  background: transparent;
+  color: var(--teks-terang);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+}
+.edit-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: white;
+}
+
+.confirm-button {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #1e1b4b;
+  border: none;
+  box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3);
+}
+.confirm-button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.confirm-note {
+  display: none;
+}
+
+/* ========================================
+   9. ANIMASI HALUS
+======================================== */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes scaleUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   10. RESPONSIVE / LAYAR HP & TABLET
+======================================== */
+@media (max-width: 850px) {
+  .login-page {
+    padding: 25px 15px;
+    overflow-y: auto;
+  }
+  .login-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 440px;
+  }
+  .logo {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px 24px;
+    border-radius: 20px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  .form-group input {
+    min-height: 46px;
+    font-size: 14px;
+  }
+  .btn-masuk {
+    min-height: 48px;
+    font-size: 14px;
+  }
+  .confirm-card {
+    padding: 30px 20px;
+    border-radius: 20px;
+  }
+}

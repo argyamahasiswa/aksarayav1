@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AksaRaya</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Backsound Utama (Login, Dashboard, Peta Petualangan, Leaderboard) -->
+    <audio
+      id="aksarayaBacksound"
+      src="assets/backsound.mp3"
+      loop
+      preload="auto"
+    ></audio>
+
+    <!-- Backsound Khusus Mengerjakan Soal (Pos 1, Pos 2, Pos 3) -->
+    <audio
+      id="aksarayaQuizBacksound"
+      src="assets/backsound-kuis.mp3"
+      loop
+      preload="auto"
+    ></audio>
+
+    <iframe
+      id="appFrame"
+      src="index.html"
+      title="Aplikasi AksaRaya"
+      allow="autoplay"
+    ></iframe>
+
+    <script>
+      (() => {
+        const audio = document.getElementById("aksarayaBacksound");
+        const quizAudio = document.getElementById("aksarayaQuizBacksound");
+        const appFrame = document.getElementById("appFrame");
+        const SOUND_KEY = "aksarayaSoundEnabled";
+
+        audio.volume = 0.7; // Volume musik peta & menu
+        quizAudio.volume = 0.6; // Volume musik kuis lebih lembut agar fokus
+
+        function getSavedPreference() {
+          try {
+            const val = sessionStorage.getItem(SOUND_KEY);
+            return val === null ? true : val === "true";
+          } catch (error) {
+            return true;
+          }
+        }
+
+        function isQuizPage() {
+          try {
+            const pathname = (
+              appFrame.contentWindow.location.pathname || ""
+            ).toLowerCase();
+            const fileName = pathname.split("/").pop() || "";
+            return (
+              fileName === "pos1.html" ||
+              fileName === "pos2.html" ||
+              fileName === "pos3.html" ||
+              fileName === "pos1" ||
+              fileName === "pos2" ||
+              fileName === "pos3"
+            );
+          } catch (error) {
+            return false;
+          }
+        }
+
+        function syncBacksoundWithPage() {
+          if (isQuizPage()) {
+            // Masuk halaman pos: hentikan musik utama, musik kuis menunggu tombol "Miwiti Kuis"
+            audio.pause();
+            quizAudio.pause();
+            quizAudio.currentTime = 0;
+            return;
+          }
+
+          // Kembali ke halaman non-soal: matikan musik kuis & nyalakan musik utama
+          quizAudio.pause();
+          quizAudio.currentTime = 0;
+
+          if (getSavedPreference() && audio.paused) {
+            audio
+              .play()
+              .catch((err) => console.warn("Autoplay terhalang:", err));
+          }
+        }
+
+        window.AksaRayaSound = {
+          playIfEnabled() {
+            if (isQuizPage()) {
+              audio.pause();
+              return;
+            }
+            if (getSavedPreference()) {
+              audio
+                .play()
+                .catch((err) => console.warn("Autoplay terhalang:", err));
+            }
+          },
+
+          pauseTemp() {
+            audio.pause();
+            quizAudio.pause();
+          },
+
+          // Dipanggil saat tombol "Miwiti Kuis / Tantangan" diklik
+          playQuizMusic() {
+            audio.pause();
+            if (getSavedPreference() && isQuizPage()) {
+              quizAudio
+                .play()
+                .catch((err) => console.warn("Musik kuis terhalang:", err));
+            }
+          },
+
+          // Dipanggil saat kuis selesai (pop-up skor muncul)
+          pauseQuizMusic() {
+            quizAudio.pause();
+            quizAudio.currentTime = 0;
+          },
+
+          async toggle() {
+            const nextState = !getSavedPreference();
+            return await this.setEnabled(nextState);
+          },
+
+          async setEnabled(value) {
+            const enabled = Boolean(value);
+            try {
+              sessionStorage.setItem(SOUND_KEY, String(enabled));
+            } catch (error) {
+              console.warn("Gagal menyimpan preferensi sound.");
+            }
+
+            if (enabled) {
+              if (!isQuizPage()) {
+                try {
+                  await audio.play();
+                } catch (error) {
+                  console.error("Backsound gagal diputar:", error);
+                }
+              }
+            } else {
+              audio.pause();
+              quizAudio.pause();
+            }
+
+            return enabled;
+          },
+
+          isEnabled() {
+            return getSavedPreference();
+          },
+        };
+
+        appFrame.addEventListener("load", syncBacksoundWithPage);
+      })();
+    </script>
+  </body>
+</html>

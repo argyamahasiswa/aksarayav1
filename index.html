@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="jv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="AksaRaya, petualangan nyenengake kanggo sinau Aksara Jawa."
+    />
+
+    <title>AksaRaya - Petualangan Aksara Jawa</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <main class="login-page">
+      <!-- Hiasan ing latar -->
+      <div class="floating leaf leaf-one" aria-hidden="true">🍃</div>
+      <div class="floating leaf leaf-two" aria-hidden="true">🌿</div>
+      <div class="floating leaf leaf-three" aria-hidden="true">✨</div>
+      <div class="floating leaf leaf-four" aria-hidden="true">🍂</div>
+
+      <section class="login-container" aria-label="Kaca mlebu AksaRaya">
+        <!-- Jeneng lan logo aplikasi -->
+        <header class="brand">
+          <img
+            src="assets/logo-aksaraya.png"
+            alt="Logo AksaRaya"
+            class="logo"
+          />
+
+          <p class="tagline">Ayo, Sinau Aksara Jawa!</p>
+        </header>
+
+        <!-- Kertu mlebu -->
+        <section class="login-card">
+          <div class="decoration" aria-hidden="true">ꦲ ꦏ ꦱ ꦫ</div>
+
+          <h1>Halo, Kanca Petualang! 👋</h1>
+
+          <p class="welcome">
+            Isi jeneng lan nomer absenmu kanggo miwiti sinau.
+          </p>
+
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="nama">Jeneng Lengkap</label>
+
+              <input
+                type="text"
+                id="nama"
+                name="nama"
+                placeholder="Lebokna jeneng lengkapmu"
+                autocomplete="name"
+                required
+                oninvalid="
+                  this.setCustomValidity('Tulung lebokna jenengmu dhisik!')
+                "
+                oninput="this.setCustomValidity('')"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="absen">Nomer Absen</label>
+
+              <input
+                type="number"
+                id="absen"
+                name="absen"
+                placeholder="Lebokna nomer absenmu"
+                min="1"
+                max="99"
+                step="1"
+                required
+                oninvalid="this.setCustomValidity('Tulung isi nomer absenmu!')"
+                oninput="this.setCustomValidity('')"
+              />
+            </div>
+
+            <p id="pesan" class="pesan" role="status" aria-live="polite"></p>
+
+            <button type="submit" class="btn-masuk">
+              <span>Miwiti Petualangan</span>
+              <span class="arrow" aria-hidden="true">➜</span>
+            </button>
+          </form>
+
+          <div class="bottom-decoration" aria-hidden="true">ꦲ ꦤ ꦕ ꦫ ꦏ</div>
+        </section>
+
+        <p class="footer-text">Sinau Aksara Jawa Dadi Luwih Nyenengake! 🌱</p>
+      </section>
+    </main>
+
+    <!-- Pop-up konfirmasi data siswa -->
+    <div
+      class="confirm-overlay"
+      id="confirmPopup"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirmTitle"
+      aria-describedby="confirmDescription"
+      hidden
+    >
+      <section class="confirm-card">
+        <div class="confirm-decoration" aria-hidden="true">ꦲ 🛡️ ꦏ</div>
+
+        <div class="confirm-icon" aria-hidden="true">🛡️</div>
+
+        <h2 id="confirmTitle">Priksa Dhisik, Yuk!</h2>
+
+        <p id="confirmDescription" class="confirm-description">
+          Apa data sing koklebokna wis bener?
+        </p>
+
+        <div class="confirm-data">
+          <div class="confirm-row">
+            <span>Jeneng</span>
+            <strong id="confirmName"></strong>
+          </div>
+
+          <div class="confirm-row">
+            <span>Nomer Absen</span>
+            <strong id="confirmAbsen"></strong>
+          </div>
+        </div>
+
+        <p class="confirm-note">Priksa maneh supaya ora kliru, ya!</p>
+
+        <div class="confirm-actions">
+          <button type="button" id="editButton" class="edit-button">
+            ↩ Ora, Owahi
+          </button>
+
+          <button type="button" id="confirmButton" class="confirm-button">
+            Ya, Wis Bener! ➜
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <script src="click-sound.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

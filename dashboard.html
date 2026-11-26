@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AksaRaya - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css?v=7" />
+  </head>
+  <body>
+    <main class="dashboard-page">
+      <!-- Menu kiri atas (Bubble Lingkaran Vertikal Tanpa Teks) -->
+      <nav class="top-menu" aria-label="Menu utama">
+        <button
+          class="menu-button"
+          id="infoButton"
+          type="button"
+          aria-label="Informasi"
+          title="Informasi CP dan TP"
+        >
+          <span class="menu-icon">ⓘ</span>
+        </button>
+
+        <!-- Tombol FAQ Sistem Penilaian -->
+        <button
+          class="menu-button"
+          id="faqButton"
+          type="button"
+          aria-label="FAQ Sistem Penilaian"
+          title="Sistem Penilaian"
+        >
+          <span class="menu-icon">❓</span>
+        </button>
+
+        <!-- Tombol Profil Pengembang -->
+        <button
+          class="menu-button"
+          id="devButton"
+          type="button"
+          aria-label="Profil Pengembang"
+          title="Profil Pengembang"
+        >
+          <span class="menu-icon">👤</span>
+        </button>
+
+        <!-- Tombol Suara -->
+        <button
+          class="menu-button"
+          id="soundButton"
+          type="button"
+          aria-label="Aktifkan atau matikan suara"
+          title="Suara"
+        >
+          <span class="menu-icon" id="soundIcon">🔊</span>
+        </button>
+      </nav>
+
+      <!-- Konten tengah -->
+      <section class="dashboard-content">
+        <img
+          src="assets/logo-aksaraya.png"
+          alt="Logo AksaRaya"
+          class="dashboard-logo"
+        />
+
+        <h1 class="welcome-name" id="welcomeName">
+          Sugeng Rawuh, Kanca Petualang!
+        </h1>
+
+        <p class="dashboard-tagline">
+          Ayo, terusna petualanganmu sinau Aksara Jawa!
+        </p>
+
+        <button class="start-button" id="startButton" type="button">
+          <span class="play-icon">▶</span>
+          MULAI PETUALANGAN
+        </button>
+      </section>
+
+      <!-- Jendela Informasi (CP & TP) -->
+      <section
+        class="popup"
+        id="infoPopup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="infoTitle"
+        hidden
+      >
+        <div class="popup-card info-card-wide">
+          <button
+            class="close-button"
+            type="button"
+            data-close="infoPopup"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
+
+          <h2 id="infoTitle" class="aksara-title">ꦥꦺꦠꦸꦤ꧀ꦗꦸꦏ꧀</h2>
+          <h3>Informasi Pembelajaran</h3>
+
+          <div class="info-content scrollable-content">
+            <div class="info-section">
+              <h4 class="info-title">
+                <span class="info-icon">🎯</span> Capaian Pembelajaran
+              </h4>
+              <div class="info-badge">
+                Elemen: Membaca dan Menulis Aksara Jawa
+              </div>
+              <p class="info-text">
+                Peserta didik mampu mengenal, membaca, dan menulis teks pendek
+                beraksara Jawa dasar yang menggunakan aksara legena (carakan),
+                sandhangan swara, serta sandhangan panyigeg wanda dengan benar
+                sesuai kaidah penulisan yang berlaku.
+              </p>
+            </div>
+
+            <div class="info-section">
+              <h4 class="info-title">
+                <span class="info-icon">📌</span> Tujuan Pembelajaran
+              </h4>
+              <ul class="tp-list">
+                <li>
+                  <strong>TP 1 (Mengenal & Mengidentifikasi)</strong>
+                  Peserta didik dapat membedakan bentuk dan fungsi aksara legena
+                  dan sandhangan melalui pengamatan teks.
+                </li>
+                <li>
+                  <strong>TP 2 (Membaca)</strong>
+                  Peserta didik dapat membaca kata sederhana yang mengandung
+                  aksara Jawa secara lancar.
+                </li>
+                <li>
+                  <strong>TP 3 (Menulis)</strong>
+                  Peserta didik dapat mengalihaksarakan kata pendek dari huruf
+                  Latin ke aksara Jawa secara mandiri.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Jendela FAQ / Sistem Penilaian (Detail) -->
+      <section
+        class="popup"
+        id="faqPopup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="faqTitle"
+        hidden
+      >
+        <div class="popup-card info-card-wide">
+          <button
+            class="close-button"
+            type="button"
+            data-close="faqPopup"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
+
+          <h2 id="faqTitle" class="aksara-title">ꦥꦶꦭꦶꦲꦤ꧀</h2>
+          <h3>Sistem Penilaian Petualangan AksaRaya</h3>
+
+          <div class="info-content scrollable-content">
+            <div class="info-section">
+              <h4 class="info-title">
+                <span class="info-icon">📊</span> 1. Pembagian Bobot Nilai Per
+                Pos (Total Max: 100 Poin)
+              </h4>
+              <p class="info-text" style="margin-bottom: 12px">
+                Petualangan AksaRaya dibagi menjadi 3 pos dengan tingkat
+                kesulitan progresif (Easy, Medium, Hard). Akumulasi nilai
+                sempurna dari ketiga pos ini bernilai total
+                <strong>100 Poin</strong>:
+              </p>
+              <ul class="tp-list">
+                <li>
+                  <strong>Pos 1 (Easy - Aksara Legena / Benar-Salah)</strong>
+                  Berisi 10 soal. Setiap jawaban benar bernilai 2 poin. Maksimal
+                  skor Pos 1 = <strong>20 Poin</strong>.
+                </li>
+                <li>
+                  <strong>Pos 2 (Medium - Sandhangan / Pilihan Ganda)</strong>
+                  Berisi 10 soal. Setiap jawaban benar bernilai 3 poin. Maksimal
+                  skor Pos 2 = <strong>30 Poin</strong>.
+                </li>
+                <li>
+                  <strong
+                    >Pos 3 (Hard - Panyigeg / Drag and Drop Susun Kata)</strong
+                  >
+                  Berisi 10 soal. Setiap susunan kata yang benar bernilai 5
+                  poin. Maksimal skor Pos 3 = <strong>50 Poin</strong>.
+                </li>
+              </ul>
+            </div>
+
+            <div class="info-section">
+              <h4 class="info-title">
+                <span class="info-icon">⚙️</span> 2. Aturan Ketentuan Pengerjaan
+              </h4>
+              <ul class="tp-list">
+                <li>
+                  <strong>Wajib Menjawab Lengkap:</strong>
+                  Seluruh 10 soal di tiap pos wajib diisi sebelum jawaban
+                  dikumpulkan.
+                </li>
+                <li>
+                  <strong>Fitur Ragu-Ragu:</strong>
+                  Peserta dapat menandai soal ragu-ragu dan memeriksanya kembali
+                  sebelum mengakhiri kuis.
+                </li>
+                <li>
+                  <strong>Pencatat Waktu (Timer):</strong>
+                  Setiap pos dilengkapi stopwatch otomatis untuk merekam durasi
+                  waktu pengerjaan.
+                </li>
+              </ul>
+            </div>
+
+            <div class="info-section">
+              <h4 class="info-title">
+                <span class="info-icon">🏆</span> 3. Sistem Perankingan &
+                Penentuan Juara
+              </h4>
+              <p class="info-text">
+                Papan peringkat kelas diurutkan berdasarkan dua kriteria utama:
+              </p>
+              <ul class="tp-list" style="margin-top: 10px">
+                <li>
+                  <strong>Prioritas Utama (Total Skor):</strong>
+                  Siswa dengan akumulasi skor tertinggi (mendekati 100 Poin)
+                  berada di posisi teratas.
+                </li>
+                <li>
+                  <strong>Kriteria Penentu (Waktu Tercepat):</strong>
+                  Jika total skor sama persis, sistem menentukan peringkat
+                  berdasarkan <strong>total waktu pengerjaan tercepat</strong>.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Jendela Profil Pengembang -->
+      <section
+        class="popup"
+        id="devPopup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="devTitle"
+        hidden
+      >
+        <div class="dev-showcase-box">
+          <button
+            class="dev-close-btn"
+            type="button"
+            data-close="devPopup"
+            aria-label="Tutup Profil Pengembang"
+          >
+            ✕
+          </button>
+
+          <h2 id="devTitle" class="sr-only">Profil Pengembang AksaRaya</h2>
+
+          <!-- Kanvas Gambar Utuh profil-pengembang.png -->
+          <div class="dev-cover-stage">
+            <img
+              src="assets/profil-pengembang.png"
+              alt="Profil Pengembang AksaRaya"
+              class="dev-cover-base"
+            />
+
+            <!-- 6 Area Tombol Interaktif Presisi di Atas Bingkai Kartu -->
+            <button
+              type="button"
+              class="dev-card-hotspot card-1"
+              onclick="openDevSlide(0)"
+              aria-label="Lihat Detail Profil Khansa' Na'ilatus S."
+              title="Klik untuk melihat detail Khansa' Na'ilatus S."
+            ></button>
+
+            <button
+              type="button"
+              class="dev-card-hotspot card-2"
+              onclick="openDevSlide(1)"
+              aria-label="Lihat Detail Profil Argya Arkananta K."
+              title="Klik untuk melihat detail Argya Arkananta K."
+            ></button>
+
+            <button
+              type="button"
+              class="dev-card-hotspot card-3"
+              onclick="openDevSlide(2)"
+              aria-label="Lihat Detail Profil Fitri Dewi Amelia"
+              title="Klik untuk melihat detail Fitri Dewi Amelia"
+            ></button>
+
+            <button
+              type="button"
+              class="dev-card-hotspot card-4"
+              onclick="openDevSlide(3)"
+              aria-label="Lihat Detail Profil M. Safiqul Aditya"
+              title="Klik untuk melihat detail M. Safiqul Aditya"
+            ></button>
+
+            <button
+              type="button"
+              class="dev-card-hotspot card-5"
+              onclick="openDevSlide(4)"
+              aria-label="Lihat Detail Profil Muhammad Syihabudin"
+              title="Klik untuk melihat detail Muhammad Syihabudin"
+            ></button>
+
+            <button
+              type="button"
+              class="dev-card-hotspot card-6"
+              onclick="openDevSlide(5)"
+              aria-label="Lihat Detail Profil M. Ilham Abdul Aziz"
+              title="Klik untuk melihat detail M. Ilham Abdul Aziz"
+            ></button>
+          </div>
+
+          <!-- Modal Slide Detail PNG Interaktif Per Orang -->
+          <div class="dev-slide-overlay" id="devDetailSlide" hidden>
+            <!-- Partikel Cahaya Latar Belakang -->
+            <div class="dev-particles" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+            </div>
+
+            <div class="dev-slide-wrapper">
+              <!-- Bar Atas: Indikator Urutan, Nama & Tombol Tutup -->
+              <div class="dev-slide-topbar">
+                <div class="dev-slide-identity">
+                  <span class="dev-slide-badge" id="devSlideCounter"
+                    >1 / 6</span
+                  >
+                  <span class="dev-slide-name" id="devSlideName"
+                    >Khansa' Na'ilatus S.</span
+                  >
+                </div>
+
+                <button
+                  type="button"
+                  class="dev-slide-close"
+                  onclick="closeDevSlide()"
+                  aria-label="Tutup Detail Profil"
+                  title="Kembali ke Daftar Pengembang"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <!-- Panggung Utama Kartu + Panah Navigasi -->
+              <div class="dev-slide-stage">
+                <button
+                  type="button"
+                  class="dev-slide-arrow prev"
+                  onclick="changeDevSlide(-1)"
+                  aria-label="Slide Sebelumnya"
+                  title="Sebelumnya (Panah Kiri)"
+                >
+                  ◀
+                </button>
+
+                <div class="dev-slide-card" id="devSlideCard">
+                  <img
+                    id="devSlideImage"
+                    src="assets/profil khansa.png"
+                    alt="Detail Profil Pengembang"
+                    class="dev-slide-img"
+                  />
+                  <div class="dev-card-glare" id="devCardGlare"></div>
+                </div>
+
+                <button
+                  type="button"
+                  class="dev-slide-arrow next"
+                  onclick="changeDevSlide(1)"
+                  aria-label="Slide Berikutnya"
+                  title="Berikutnya (Panah Kanan)"
+                >
+                  ▶
+                </button>
+              </div>
+
+              <!-- Bar Bawah: Pemilih Cepat 6 Anggota -->
+              <div
+                class="dev-roster-bar"
+                id="devRosterBar"
+                aria-label="Pilih anggota pengembang"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="aksaraya-sound.js"></script>
+    <script src="click-sound.js"></script>
+    <script src="dashboard.js?v=8"></script>
+    <script>
+      (function () {
+        const daftarPengembang = [
+          {
+            nama: "Khansa' Na'ilatus S.",
+            panggilan: "Khansa'",
+            src: "assets/profil khansa.png",
+          },
+          {
+            nama: "Argya Arkananta K.",
+            panggilan: "Arka",
+            src: "assets/profil arka.png",
+          },
+          {
+            nama: "Fitri Dewi Amelia",
+            panggilan: "Amel",
+            src: "assets/profil amel.png",
+          },
+          {
+            nama: "M. Safiqul Aditya",
+            panggilan: "Safiq",
+            src: "assets/profil safiq.png",
+          },
+          {
+            nama: "Muhammad Syihabudin",
+            panggilan: "Syihab",
+            src: "assets/profil syihab.png",
+          },
+          {
+            nama: "M. Ilham Abdul Aziz",
+            panggilan: "Ilham",
+            src: "assets/profil ilham.png",
+          },
+        ];
+
+        let indeksAktif = 0;
+
+        function sinkronkanTampilanSlide(index, arah = "next") {
+          const item = daftarPengembang[index];
+          if (!item) return;
+
+          const slideImg = document.getElementById("devSlideImage");
+          const slideCard = document.getElementById("devSlideCard");
+          const counterEl = document.getElementById("devSlideCounter");
+          const nameEl = document.getElementById("devSlideName");
+          const rosterBar = document.getElementById("devRosterBar");
+
+          if (slideCard) {
+            slideCard.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+            slideCard.classList.remove("anim-next", "anim-prev");
+            void slideCard.offsetWidth;
+            slideCard.classList.add(
+              arah === "prev" ? "anim-prev" : "anim-next",
+            );
+          }
+          if (slideImg) {
+            slideImg.src = item.src;
+            slideImg.alt = `Detail Profil ${item.nama}`;
+          }
+          if (counterEl) {
+            counterEl.textContent = `${index + 1} / ${daftarPengembang.length}`;
+          }
+          if (nameEl) {
+            nameEl.textContent = item.nama;
+          }
+          if (rosterBar) {
+            rosterBar.innerHTML = daftarPengembang
+              .map(
+                (dev, idx) => `
+                  <button
+                    type="button"
+                    class="dev-roster-pill ${idx === index ? "active" : ""}"
+                    onclick="goToDevSlide(${idx})"
+                  >
+                    ${idx + 1}. ${dev.panggilan}
+                  </button>
+                `,
+              )
+              .join("");
+          }
+        }
+
+        window.openDevSlide = function (index) {
+          const slideOverlay = document.getElementById("devDetailSlide");
+          if (!slideOverlay) return;
+          indeksAktif = index;
+          sinkronkanTampilanSlide(indeksAktif, "next");
+          slideOverlay.hidden = false;
+        };
+
+        window.closeDevSlide = function () {
+          const slideOverlay = document.getElementById("devDetailSlide");
+          if (slideOverlay) {
+            slideOverlay.hidden = true;
+          }
+        };
+
+        window.changeDevSlide = function (step) {
+          const total = daftarPengembang.length;
+          indeksAktif = (indeksAktif + step + total) % total;
+          sinkronkanTampilanSlide(indeksAktif, step >= 0 ? "next" : "prev");
+        };
+
+        window.goToDevSlide = function (index) {
+          const arah = index >= indeksAktif ? "next" : "prev";
+          indeksAktif = index;
+          sinkronkanTampilanSlide(indeksAktif, arah);
+        };
+
+        const cardEl = document.getElementById("devSlideCard");
+        const glareEl = document.getElementById("devCardGlare");
+
+        cardEl?.addEventListener("mousemove", (event) => {
+          const rect = cardEl.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+          const percentX = (x / rect.width) * 100;
+          const percentY = (y / rect.height) * 100;
+
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -4;
+          const rotateY = ((x - centerX) / centerX) * 4;
+
+          cardEl.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.01)`;
+
+          if (glareEl) {
+            glareEl.style.background = `radial-gradient(circle at ${percentX}% ${percentY}%, rgba(255, 251, 235, 0.22) 0%, transparent 60%)`;
+          }
+        });
+
+        cardEl?.addEventListener("mouseleave", () => {
+          cardEl.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+        });
+      })();
+    </script>
+  </body>
+</html>
