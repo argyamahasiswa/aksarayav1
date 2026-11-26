@@ -148,7 +148,7 @@ function aktifkanPenguatSuaraVideo(videoEl, tingkatPenguatan = 4.5) {
       videoGainNode.gain.value = tingkatPenguatan;
 
       const compressor = videoAudioCtx.createDynamicsCompressor();
-      compressor.threshold.value = -2; // Dilonggarkan dari -10 agar volume tidak tertahan
+      compressor.threshold.value = -2;
       compressor.knee.value = 6;
       compressor.ratio.value = 4;
       compressor.attack.value = 0.003;
@@ -230,20 +230,16 @@ document.addEventListener("DOMContentLoaded", () => {
 if (learningVideo) {
   learningVideo.volume = 1.0;
   learningVideo.addEventListener("play", () => {
-    if (window.parent && window.parent.AksaRayaSound) {
-      window.parent.AksaRayaSound.pauseTemp();
-    }
-    aktifkanPenguatSuaraVideo(learningVideo, 4.5); // Ubah angka ini (misal 4.5 atau 5.5)
+    window.AksaRayaSound?.pauseForQuiz?.();
+    aktifkanPenguatSuaraVideo(learningVideo, 4.5);
   });
 }
 
-startQuizBtn.addEventListener("click", () => {
+startQuizBtn?.addEventListener("click", () => {
   if (learningVideo) learningVideo.pause();
-  if (window.parent && window.parent.AksaRayaSound) {
-    window.parent.AksaRayaSound.playQuizMusic();
-  }
   videoSection.hidden = true;
   quizSection.hidden = false;
+  window.AksaRayaSound?.playQuizBacksound?.();
   startTimer();
   renderNumberGrid();
   loadQuestion(0);
@@ -334,7 +330,6 @@ function closeWarning() {
 }
 
 function finishQuiz() {
-  // 1. Wajib cek soal kosong dan soal ragu-ragu terlebih dahulu
   const unanswered = [];
   userAnswers.forEach((ans, idx) => {
     if (ans === null) unanswered.push(idx + 1);
@@ -364,7 +359,6 @@ function finishQuiz() {
     return;
   }
 
-  // 2. Jika semua soal sudah terjawab & tidak ada ragu-ragu, baru hitung skor
   clearInterval(timerInterval);
   let score = 0;
   let correctCount = 0;
@@ -372,7 +366,7 @@ function finishQuiz() {
 
   userAnswers.forEach((ans, idx) => {
     if (ans === quizData[idx].isTrue) {
-      score += 2; // Bobot 2 poin per soal (Max 20)
+      score += 2;
       correctCount++;
     } else {
       wrongCount++;
@@ -385,9 +379,7 @@ function finishQuiz() {
   sessionStorage.setItem("waktu_pos1", timerSeconds);
   sessionStorage.setItem("pos_terbuka", "2");
 
-  if (window.parent && window.parent.AksaRayaSound) {
-    window.parent.AksaRayaSound.pauseQuizMusic();
-  }
+  window.AksaRayaSound?.pauseForQuiz?.();
 
   const mins = String(Math.floor(timerSeconds / 60)).padStart(2, "0");
   const secs = String(timerSeconds % 60).padStart(2, "0");

@@ -6,10 +6,20 @@
 
   const SOUND_KEY = "aksarayaSoundEnabled";
   const TIME_KEY = "aksarayaSoundTime";
-  const DEFAULT_SRC = "assets/backsound.mp3";
-  const isQuizTrack = Boolean(customSrc && customSrc !== DEFAULT_SRC);
+  const MAIN_SRC = "assets/backsound.mp3";
+  const QUIZ_SRC =
+    customSrc && customSrc !== MAIN_SRC
+      ? customSrc
+      : "assets/backsound-kuis.mp3";
+  const isQuizPage = Boolean(customSrc && customSrc !== MAIN_SRC);
 
-  // Jika dibuka di dalam iframe (misalnya dari app.html)
+  function areAllVideosHidden() {
+    const videos = Array.from(document.querySelectorAll("video"));
+    if (videos.length === 0) return true;
+    return videos.every((v) => v.offsetParent === null);
+  }
+
+  // Cek apakah halaman ini dibuka di dalam iframe induk (misalnya app.html)
   let parentSound = null;
   try {
     if (
@@ -21,26 +31,69 @@
     }
   } catch (e) {}
 
-  // Halaman non-kuis cukup memakai pengelola suara milik induk agar lagu tidak terputus
-  if (!isQuizTrack && parentSound) {
+  // Jika dibuka di dalam iframe app.html, hubungkan langsung ke pengelola suara induk
+  if (parentSound) {
     window.AksaRayaSound = parentSound;
+
+    if (isQuizPage) {
+      if (areAllVideosHidden()) {
+        parentSound.playQuizBacksound?.();
+      } else {
+        parentSound.pauseTemp?.();
+      }
+
+      document.addEventListener(
+        "play",
+        (event) => {
+          if (event.target && event.target.tagName === "VIDEO") {
+            parentSound.pauseTemp?.();
+          }
+        },
+        true,
+      );
+
+      document.addEventListener(
+        "ended",
+        (event) => {
+          if (event.target && event.target.tagName === "VIDEO") {
+            parentSound.playQuizBacksound?.();
+          }
+        },
+        true,
+      );
+
+      document.addEventListener("click", () => {
+        setTimeout(() => {
+          if (areAllVideosHidden()) {
+            document.querySelectorAll("video").forEach((v) => {
+              try {
+                v.pause();
+              } catch (e) {}
+            });
+            parentSound.playQuizBacksound?.();
+          }
+        }, 30);
+      });
+    }
     return;
   }
 
-  let activeSrc = customSrc || DEFAULT_SRC;
-  const audio = new Audio(activeSrc);
-  audio.loop = true;
-  audio.volume = 0.35;
-  audio.preload = "metadata";
+  // Inisialisasi pemutar utama (dashboard & peta petualangan) dan pemutar khusus kuis
+  const mainAudio = new Audio(MAIN_SRC);
+  mainAudio.loop = true;
+  mainAudio.volume = 0.35;
+  mainAudio.preload = "metadata";
 
-  // Cadangan otomatis ke backsound.mp3 jika file backsound-kuis.mp3 tidak ditemukan
-  audio.addEventListener("error", () => {
-    if (activeSrc !== DEFAULT_SRC) {
-      activeSrc = DEFAULT_SRC;
-      audio.src = DEFAULT_SRC;
-      if (enabled && quizReady && !pausedByVideo) {
-        syncPlay();
-      }
+  const quizAudio = new Audio(QUIZ_SRC);
+  quizAudio.loop = true;
+  quizAudio.volume = 0.35;
+  quizAudio.preload = "metadata";
+
+  let quizAudioFailed = false;
+  quizAudio.addEventListener("error", () => {
+    quizAudioFailed = true;
+    if (enabled && isQuizMode && quizReady && !pausedByVideo) {
+      syncPlay();
     }
   });
 
@@ -49,40 +102,39 @@
     const saved = sessionStorage.getItem(SOUND_KEY);
     if (saved !== null) {
       enabled = saved === "true";
-    } else if (parentSound && typeof parentSound.isEnabled === "function") {
-      enabled = Boolean(parentSound.isEnabled());
     }
   } catch (e) {}
 
-  // Lanjutkan dari detik terakhir hanya untuk backsound utama
-  if (!isQuizTrack) {
-    try {
-      const savedTime = parseFloat(sessionStorage.getItem(TIME_KEY) || "0");
-      if (!Number.isNaN(savedTime) && savedTime > 0) {
-        audio.addEventListener(
-          "loadedmetadata",
-          () => {
-            if (Number.isFinite(audio.duration) && savedTime < audio.duration) {
-              audio.currentTime = savedTime;
-            }
-          },
-          { once: true },
-        );
-      }
-    } catch (e) {}
-  }
+  // Lanjutkan posisi detik terakhir untuk backsound utama
+  try {
+    const savedTime = parseFloat(sessionStorage.getItem(TIME_KEY) || "0");
+    if (!Number.isNaN(savedTime) && savedTime > 0) {
+      mainAudio.addEventListener(
+        "loadedmetadata",
+        () => {
+          if (
+            Number.isFinite(mainAudio.duration) &&
+            savedTime < mainAudio.duration
+          ) {
+            mainAudio.currentTime = savedTime;
+          }
+        },
+        { once: true },
+      );
+    }
+  } catch (e) {}
 
   const listeners = new Set();
   let pausedByVideo = false;
+  let isQuizMode = isQuizPage;
+  let quizReady = !isQuizPage || areAllVideosHidden();
 
-  function areAllVideosHidden() {
-    const videos = Array.from(document.querySelectorAll("video"));
-    if (videos.length === 0) return true;
-    return videos.every((v) => v.offsetParent === null);
+  function getActiveAudio() {
+    if (isQuizMode && !quizAudioFailed) {
+      return quizAudio;
+    }
+    return mainAudio;
   }
-
-  // Pada halaman soal yang menampilkan video materi, tahan backsound-kuis sampai masuk sesi soal
-  let quizReady = !isQuizTrack || areAllVideosHidden();
 
   function notify() {
     listeners.forEach((fn) => {
@@ -93,28 +145,26 @@
   }
 
   function savePosition() {
-    if (isQuizTrack) return;
     try {
-      if (!Number.isNaN(audio.currentTime)) {
-        sessionStorage.setItem(TIME_KEY, String(audio.currentTime));
+      if (!Number.isNaN(mainAudio.currentTime)) {
+        sessionStorage.setItem(TIME_KEY, String(mainAudio.currentTime));
       }
     } catch (e) {}
   }
 
   async function syncPlay() {
-    if (!enabled || pausedByVideo || !quizReady) {
-      audio.pause();
+    if (!enabled || pausedByVideo || (isQuizMode && !quizReady)) {
+      mainAudio.pause();
+      quizAudio.pause();
       return false;
     }
+
+    const active = getActiveAudio();
+    const inactive = active === quizAudio ? mainAudio : quizAudio;
+    inactive.pause();
+
     try {
-      if (
-        isQuizTrack &&
-        parentSound &&
-        typeof parentSound.pauseForQuiz === "function"
-      ) {
-        parentSound.pauseForQuiz();
-      }
-      await audio.play();
+      await active.play();
       return true;
     } catch (err) {
       return false;
@@ -123,7 +173,7 @@
 
   function armUnlockOnGesture() {
     const unlock = async () => {
-      if (!enabled || pausedByVideo || !quizReady) return;
+      if (!enabled || pausedByVideo || (isQuizMode && !quizReady)) return;
       const ok = await syncPlay();
       if (ok) {
         document.removeEventListener("pointerdown", unlock);
@@ -134,25 +184,26 @@
     document.addEventListener("keydown", unlock);
   }
 
-  // Jeda backsound saat video materi diputar
+  // Jeda otomatis saat video materi diputar
   document.addEventListener(
     "play",
     (event) => {
       if (event.target && event.target.tagName === "VIDEO") {
         pausedByVideo = true;
-        audio.pause();
+        mainAudio.pause();
+        quizAudio.pause();
       }
     },
     true,
   );
 
-  // Lanjutkan jika video dijeda saat sudah masuk mode soal
+  // Lanjutkan bila video dijeda saat sudah masuk mode soal
   document.addEventListener(
     "pause",
     (event) => {
       if (event.target && event.target.tagName === "VIDEO") {
         pausedByVideo = false;
-        if (enabled && quizReady) {
+        if (enabled && (!isQuizMode || quizReady)) {
           syncPlay();
         }
       }
@@ -160,13 +211,16 @@
     true,
   );
 
-  // Nyalakan backsound-kuis otomatis setelah video materi selesai
+  // Nyalakan backsound kuis saat video materi selesai
   document.addEventListener(
     "ended",
     (event) => {
       if (event.target && event.target.tagName === "VIDEO") {
         pausedByVideo = false;
-        quizReady = true;
+        if (isQuizPage) {
+          isQuizMode = true;
+          quizReady = true;
+        }
         if (enabled) {
           syncPlay();
         }
@@ -175,9 +229,9 @@
     true,
   );
 
-  // Deteksi otomatis saat tombol lanjut/mulai kuis diklik dan tampilan berpindah dari video ke soal
+  // Deteksi klik tombol mulai kuis saat area video disembunyikan
   document.addEventListener("click", () => {
-    if (!isQuizTrack || quizReady) return;
+    if (!isQuizPage || quizReady) return;
     setTimeout(() => {
       if (areAllVideosHidden()) {
         document.querySelectorAll("video").forEach((v) => {
@@ -186,6 +240,7 @@
           } catch (e) {}
         });
         pausedByVideo = false;
+        isQuizMode = true;
         quizReady = true;
         if (enabled) {
           syncPlay();
@@ -195,19 +250,19 @@
   });
 
   setInterval(() => {
-    if (!audio.paused) {
+    if (!mainAudio.paused) {
       savePosition();
     }
   }, 1000);
 
   window.addEventListener("pagehide", () => {
     savePosition();
-    if (isQuizTrack) audio.pause();
+    quizAudio.pause();
   });
 
   window.addEventListener("beforeunload", () => {
     savePosition();
-    if (isQuizTrack) audio.pause();
+    quizAudio.pause();
   });
 
   window.AksaRayaSound = {
@@ -220,7 +275,12 @@
         sessionStorage.setItem(SOUND_KEY, String(enabled));
       } catch (e) {}
       await syncPlay();
-      if (enabled && !pausedByVideo && quizReady && audio.paused) {
+      if (
+        enabled &&
+        !pausedByVideo &&
+        (!isQuizMode || quizReady) &&
+        getActiveAudio().paused
+      ) {
         armUnlockOnGesture();
       }
       savePosition();
@@ -229,9 +289,12 @@
     },
     async playIfEnabled() {
       pausedByVideo = false;
+      isQuizMode = false;
       quizReady = true;
+      quizAudio.pause();
+      quizAudio.currentTime = 0;
       if (!enabled) {
-        audio.pause();
+        mainAudio.pause();
         return false;
       }
       const ok = await syncPlay();
@@ -240,11 +303,32 @@
     },
     async playQuizBacksound() {
       pausedByVideo = false;
+      isQuizMode = true;
       quizReady = true;
-      return this.playIfEnabled();
+      if (!enabled) {
+        mainAudio.pause();
+        quizAudio.pause();
+        return false;
+      }
+      const ok = await syncPlay();
+      if (!ok) armUnlockOnGesture();
+      return ok;
+    },
+    playQuizMusic() {
+      return this.playQuizBacksound();
     },
     pauseForQuiz() {
-      audio.pause();
+      pausedByVideo = true;
+      mainAudio.pause();
+      quizAudio.pause();
+    },
+    pauseTemp() {
+      this.pauseForQuiz();
+    },
+    pauseQuizMusic() {
+      isQuizMode = false;
+      quizAudio.pause();
+      quizAudio.currentTime = 0;
     },
     onChange(cb) {
       listeners.add(cb);
@@ -252,7 +336,7 @@
     },
   };
 
-  if (enabled && quizReady) {
+  if (enabled && (!isQuizMode || quizReady)) {
     syncPlay().then((ok) => {
       if (!ok) armUnlockOnGesture();
     });
