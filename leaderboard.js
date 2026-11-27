@@ -1,34 +1,88 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Sinkronkan & nyalakan backsound utama di halaman papan peringkat
+  const SOUND_KEY = "aksarayaSoundEnabled";
   const soundButton = document.getElementById("soundButton");
   const soundIcon = document.getElementById("soundIcon");
   const soundManager = window.AksaRayaSound || null;
 
-  function syncSoundButton(isEnabled) {
+  // Pemutar cadangan jika aksaraya-sound.js gagal dimuat
+  let fallbackAudio = null;
+  if (!soundManager) {
+    fallbackAudio = new Audio("assets/backsound.mp3");
+    fallbackAudio.loop = true;
+    fallbackAudio.volume = 0.45;
+  }
+
+  let isSoundOn = true;
+  try {
+    const saved = sessionStorage.getItem(SOUND_KEY);
+    if (saved !== null) {
+      isSoundOn = saved === "true";
+    } else if (soundManager && typeof soundManager.isEnabled === "function") {
+      isSoundOn = Boolean(soundManager.isEnabled());
+    }
+  } catch (e) {}
+
+  function renderSoundIcon(enabled) {
+    isSoundOn = Boolean(enabled);
     if (soundIcon) {
-      soundIcon.textContent = isEnabled ? "🔊" : "🔇";
+      soundIcon.textContent = isSoundOn ? "🔊" : "🔇";
     }
     if (soundButton) {
       soundButton.setAttribute(
         "aria-label",
-        isEnabled ? "Matikan backsound" : "Nyalakan backsound",
+        isSoundOn ? "Matikan backsound" : "Nyalakan backsound",
       );
-      soundButton.setAttribute("aria-pressed", String(isEnabled));
+      soundButton.setAttribute("aria-pressed", String(isSoundOn));
     }
   }
 
-  if (soundManager) {
-    syncSoundButton(soundManager.isEnabled());
-    soundManager.playIfEnabled();
-    soundManager.onChange(syncSoundButton);
+  async function toggleSound() {
+    const targetState = !isSoundOn;
+    renderSoundIcon(targetState);
 
-    soundButton?.addEventListener("click", () => {
-      soundManager.setEnabled(!soundManager.isEnabled());
-    });
-  } else {
-    const saved = sessionStorage.getItem("aksarayaSoundEnabled");
-    syncSoundButton(saved !== "false");
+    try {
+      sessionStorage.setItem(SOUND_KEY, String(targetState));
+    } catch (e) {}
+
+    if (soundManager && typeof soundManager.setEnabled === "function") {
+      const actual = await soundManager.setEnabled(targetState);
+      renderSoundIcon(actual);
+    } else if (fallbackAudio) {
+      if (targetState) {
+        try {
+          await fallbackAudio.play();
+        } catch (err) {}
+      } else {
+        fallbackAudio.pause();
+      }
+    }
   }
+
+  // Inisialisasi status awal & hubungkan klik tombol speaker
+  renderSoundIcon(isSoundOn);
+
+  if (soundManager) {
+    if (isSoundOn) {
+      soundManager.playIfEnabled?.();
+    }
+    soundManager.onChange?.(renderSoundIcon);
+  } else if (fallbackAudio && isSoundOn) {
+    fallbackAudio.play().catch(() => {
+      const resumeOnClick = () => {
+        if (isSoundOn && fallbackAudio.paused) {
+          fallbackAudio.play().catch(() => {});
+        }
+        document.removeEventListener("pointerdown", resumeOnClick);
+      };
+      document.addEventListener("pointerdown", resumeOnClick);
+    });
+  }
+
+  soundButton?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleSound();
+  });
 
   // URL WEB APP APPS SCRIPT
   const GAS_URL =
@@ -38,14 +92,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const tableContainer = document.getElementById("tableContainer");
   const tbody = document.getElementById("leaderboardBody");
 
-  // Format detik jadi MM:SS
   function formatWaktu(totalDetik) {
     const m = String(Math.floor(totalDetik / 60)).padStart(2, "0");
     const s = String(totalDetik % 60).padStart(2, "0");
     return `${m}:${s}`;
   }
 
-  // Tarik data dari Google Sheets (GET Request)
   fetch(GAS_URL)
     .then((response) => response.json())
     .then((data) => {
@@ -54,13 +106,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       tbody.innerHTML = "";
 
-      // Loop data dan masukkan ke tabel
       data.forEach((siswa, index) => {
         const rank = index + 1;
         let rankClass = "";
         let rankIcon = rank;
 
-        // Styling khusus top 3
         if (rank === 1) {
           rankClass = "rank-1";
           rankIcon = "🥇 1";
